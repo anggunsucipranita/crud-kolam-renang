@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pelanggan;
 use Illuminate\Http\Request;
+use App\Models\Pelanggan;
 
 class PelangganController extends Controller
 {
@@ -15,27 +15,55 @@ class PelangganController extends Controller
 
     public function store(Request $request)
     {
-        Pelanggan::create($request->all());
-        return redirect('/pelanggan'); // FIX
+        $harga = $request->jenis_tiket == 'Anak' ? 10000 : 15000;
+        $total = $request->jumlah_orang * $harga;
+
+        Pelanggan::create([
+            'nama_pelanggan' => $request->nama_pelanggan,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'no_hp' => $request->no_hp,
+            'jenis_tiket' => $request->jenis_tiket,
+            'tanggal_masuk' => $request->tanggal_masuk,
+            'jumlah_orang' => $request->jumlah_orang,
+            'total_bayar' => $total
+        ]);
+
+        return redirect('/pelanggan');
     }
 
     public function edit($id)
     {
-        $edit = Pelanggan::find($id);
+        $edit = Pelanggan::findOrFail($id);
         $data = Pelanggan::all();
-        return view('pelanggan.index', compact('data', 'edit'));
+
+        return view('pelanggan.index', compact('edit', 'data'));
     }
 
     public function update(Request $request, $id)
     {
-        $data = Pelanggan::find($id);
-        $data->update($request->all());
+        $data = Pelanggan::findOrFail($id);
+
+        $harga = $request->jenis_tiket == 'Anak' ? 10000 : 15000;
+        $total = $request->jumlah_orang * $harga;
+
+        $data->update([
+            'nama_pelanggan' => $request->nama_pelanggan,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'no_hp' => $request->no_hp,
+            'jenis_tiket' => $request->jenis_tiket,
+            'tanggal_masuk' => $request->tanggal_masuk,
+            'jumlah_orang' => $request->jumlah_orang,
+            'total_bayar' => $total
+        ]);
+
         return redirect('/pelanggan');
     }
 
     public function destroy($id)
     {
-        Pelanggan::destroy($id);
-        return redirect('/pelanggan'); // FIX
+        $data = Pelanggan::findOrFail($id);
+        $data->delete();
+
+        return redirect('/pelanggan');
     }
 }

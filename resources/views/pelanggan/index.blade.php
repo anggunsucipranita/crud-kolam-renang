@@ -9,20 +9,28 @@
     <input name="nama_pelanggan" placeholder="Nama" value="{{ $edit->nama_pelanggan ?? '' }}">
     
     <select name="jenis_kelamin">
-        <option>Laki-laki</option>
-        <option>Perempuan</option>
+        <option {{ (isset($edit) && $edit->jenis_kelamin == 'Laki-laki') ? 'selected' : '' }}>Laki-laki</option>
+        <option {{ (isset($edit) && $edit->jenis_kelamin == 'Perempuan') ? 'selected' : '' }}>Perempuan</option>
     </select>
 
     <input name="no_hp" placeholder="No HP" value="{{ $edit->no_hp ?? '' }}">
 
-    <select name="jenis_tiket">
-        <option>Anak</option>
-        <option>Dewasa</option>
+    <select name="jenis_tiket" id="jenis_tiket" onchange="hitungTotal()">
+        <option value="Anak" {{ (isset($edit) && $edit->jenis_tiket == 'Anak') ? 'selected' : '' }}>Anak</option>
+        <option value="Dewasa" {{ (isset($edit) && $edit->jenis_tiket == 'Dewasa') ? 'selected' : '' }}>Dewasa</option>
     </select>
 
     <input type="date" name="tanggal_masuk" value="{{ $edit->tanggal_masuk ?? '' }}">
-    <input name="jumlah_orang" placeholder="Jumlah Orang" value="{{ $edit->jumlah_orang ?? '' }}">
-    <input name="total_bayar" placeholder="Total Bayar" value="{{ $edit->total_bayar ?? '' }}">
+
+    <input type="number" name="jumlah_orang" id="jumlah_orang"
+           placeholder="Jumlah Orang"
+           value="{{ $edit->jumlah_orang ?? '' }}"
+           oninput="hitungTotal()">
+
+    <input name="total_bayar" id="total_bayar"
+           placeholder="Total Bayar"
+           value="{{ $edit->total_bayar ?? '' }}"
+           readonly>
 
     <button type="submit">
         {{ isset($edit) ? 'Update' : 'Simpan' }}
@@ -68,3 +76,26 @@
     </tr>
     @endforeach
 </table>
+
+<script>
+function hitungTotal() {
+    let jumlah = document.getElementById('jumlah_orang').value || 0;
+    let jenis = document.getElementById('jenis_tiket').value;
+
+    let harga = 0;
+
+    if (jenis === "Anak") {
+        harga = 10000;
+    } else if (jenis === "Dewasa") {
+        harga = 15000;
+    }
+
+    let total = jumlah * harga;
+
+    document.getElementById('total_bayar').value = total;
+}
+
+window.onload = function() {
+    hitungTotal();
+}
+</script>
